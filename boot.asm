@@ -1,50 +1,51 @@
 bits 16
 org 0x7c00
 
-mov si, name        
 
-
-;random row
-call random
-
-
-mov ah, 0x02        
-mov bh, 0x00   
-mov dh, [row]
-mov dl, [column]                          
-int 0x10
-
-; Print name
-print_name:
+_start:
     
-    mov ah, 0x0e    
-    mov al, [si]    
-    int 0x10        ; Call BIOS to print
-    inc si          ; move next caracter
-    cmp byte [si], 0 ; check final string
-    jne print_name  
+    ;call clean_screen
 
-jmp wait_key
+    mov ah, 0x00        ; Function 00h de INT 1Ah -set video mode
+    mov al, 0x13        ; grafic mode 13h (320x200 pix, 256 colors)
+    int 0x10            ; call a la BIOS 
+    call random
+    call draw_pix
+    
+draw_pix:
+    
+    mov ah, 0x0C       ; function screen draw
+    mov al, 4          ; red color pixel
+    mov cx, [row]      ; Pos Y 
+    mov dx, [column]   ; Pos X 
+    int 0x10           ; call BIOS
+    ret
 
 ;random rows & columns
-random:
 
-    mov ah, 0x00        ; Function 00h de INT 1Ah -get sistem Time
+random:
+    mov ah, 0x00        ; Function 00h -get sistem Time
     int 0x1A            ; Call BIOS
     mov ax, dx          ; dx use Time as seed
 
     xor dx, dx          
-    mov cx, 25          ; max num rows (0-24)
+    mov cx, 200          ; max num rows (0-199)
     div cx              ; Divide AX por 25,
-    mov [row], dl  
-
+    mov [row], dx  
 
     mov ax, dx         
     xor dx, dx          
-    mov cx, 80          ; max num rows (0-79)
+    mov cx, 320          ; max num columns (0-319)
     div cx              
-    mov [column], dl   
+    mov [column], dx   
+    ret
 
+clean_screen:
+    mov ah, 0x0C        
+    mov al, 0x00        
+    mov cx, 0           ; initial left screeen
+    mov dx, 0           ; initial rigth screen
+    mov bx, 320*200     ; total pix
     ret
 
 wait_key:
@@ -65,6 +66,7 @@ rotate_right:
     mov ah, 0x0e    ; print caracteres
     mov al, 'l'     ; load key value tecla
     int 0x10        ; Call bios
+    call clean_screen
     jmp wait_key
 
 rotate_up:
@@ -88,22 +90,11 @@ rotate_left:
     int 0x10
     jmp wait_key
 
-clean_screen:
-    mov ah, 0x06        ; Función 06h de INT 10h - Desplazar pantalla
-    mov al, 0x00        ; Atributo de fondo de pantalla (0x00 = blanco)
-    mov bh, 0x00        ; Página de video
-    mov cx, 0x0000      ; Esquina superior izquierda
-    mov dx, 0x184f      ; Esquina inferior derecha (80 columnas x 25 filas)
-    int 0x10            ; Llamada a la BIOS
-
 row:
     db 0
 
 column:
     db 0
-
-name:
-    db "tefa", 0
 
 times 510 - ($ - $$) db 0 
 dw 0xAA55              
