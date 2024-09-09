@@ -16,16 +16,16 @@ _start:
 ; Función para dibujar la matriz
 draw_pix:
     mov si, letter_matrix    ; load matrix
-    mov bx, 24                ; # rows
+    mov bx, 6                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
 
     next_row:
         mov di, [si]             ; load actual byte
-        mov bp, 8                ; 8 columns, 1 byte
+        mov bp, 16                ; 8 columns, 1 byte
 
     next_pixel:
-        test di, 80h             
+        test di, 8000h             
         jz skip_pixel           
 
         ; Draw pix (dx, cx)
@@ -41,8 +41,8 @@ draw_pix:
         jnz next_pixel          
         ; next row
         mov dx, [column]        
-        inc cx 
-        inc si                  
+        inc cx              
+        add si, 2                  
         dec bx                  
         jnz next_row            
 
@@ -91,33 +91,12 @@ rotate_right:
     jmp wait_key
 
 letter_matrix:
-    db 0b1000000 
-    db 0b1000000
-    db 0b1111111
-    db 0b1000000 
-    db 0b1000000 
-    db 0b0000000
-
-    db 0b0011111  
-    db 0b0010101  
-    db 0b0010101  
-    db 0b0011101  
-    db 0b0000000 
-
-    db 0b1111111 
-    db 0b1001000
-    db 0b1001000
-    db 0b1000000 
-    db 0b0000000 
-
-    db 0b0000011 
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100 
-    db 0b1000100 
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
+    dw 0b00000000111
+    dw 0b00000000111
+    dw 0b11111111100
+    dw 0b00000000111
+    dw 0b00000000111
+    dw 0b11111111100
 
 
 row:
