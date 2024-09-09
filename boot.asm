@@ -3,19 +3,17 @@ org 0x7c00
 
 
 _start:
-    
-    ;call clean_screen
-
     mov ah, 0x00        ; Function 00h de INT 1Ah -set video mode
     mov al, 0x13        ; grafic mode 13h (320x200 pix, 256 colors)
     int 0x10            ; call a la BIOS 
+    ;call draw_welcome
     call random
-    call draw_pix
-    
+    call wait_key
 
-; Función para dibujar la matriz
+
+
 draw_pix:
-    mov si, letter_matrix    ; load matrix
+   ; mov si, letter_matrix    ; load matrix
     mov bx, 24                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
@@ -44,8 +42,7 @@ draw_pix:
         inc cx 
         inc si                  
         dec bx                  
-        jnz next_row            
-
+        jnz next_row  
         ret
 
 ;random rows & columns
@@ -68,29 +65,36 @@ random:
     ret
 
 clean_screen:
-    mov ah, 0x0C        
-    mov al, 0x00        
-    mov cx, 0           ; initial left screeen
-    mov dx, 0           ; initial rigth screen
-    mov bx, 320*200     ; total pix
+    mov ax, 0x0013    
+    int 0x10          
     ret
 
 wait_key:
     mov ah, 0x00    ; Read key
     int 0x16        ; Call BIOS to read the key
-    cmp al, 'l'
-    je rotate_right
-    jmp wait_key      ; check again for keys
+    cmp al, 'e'
+    je initial_name_key
+    cmp al, 'i'
+    je initial_name_key
+    cmp al, 'k'
+    je name_down_key
+    jmp wait_key    
 
-rotate_right:
+    initial_name_key:
+        int 0x10                   ; call BIOS
+        call clean_screen
+        mov si, initial_name     ; load matrix
+        call draw_pix
+        jmp wait_key    
 
-    mov ah, 0x0e    ; print caracteres
-    mov al, 'l'     ; load key value tecla
-    int 0x10        ; Call bios
-    call clean_screen
-    jmp wait_key
+    name_down_key:
+        int 0x10        
+        call clean_screen
+        mov si, name_down     
+        call draw_pix
+        jmp wait_key    
 
-letter_matrix:
+initial_name:
     db 0b1000000 
     db 0b1000000
     db 0b1111111
@@ -119,6 +123,49 @@ letter_matrix:
     db 0b0001100
     db 0b0000011
 
+
+name_down:
+    db 0b00000001
+    db 0b00000001
+    db 0b11111111
+    db 0b00000001
+    db 0b00000001
+    db 0b00000000
+
+    db 0b11110000
+    db 0b10101000
+    db 0b10101000
+    db 0b10111000
+    db 0b00000000
+
+    db 0b11111111
+    db 0b0001001
+    db 0b0001001
+    db 0b0000001
+    db 0b00000000
+
+    db 0b1100000
+    db 0b0011000
+    db 0b0010111
+    db 0b0010001
+    db 0b0010001
+    db 0b0010111
+    db 0b0011000
+    db 0b1100000
+
+
+
+initial_screen:
+    db 0b1111111    
+    db 0b1111111
+    db 0b1111111
+    db 0b1111111    
+    db 0b1111111
+    db 0b1111111
+
+;not implemented yet
+welcome:
+    db "presione la tecla 'e' para iniciar", 0
 
 row:
     db 0
