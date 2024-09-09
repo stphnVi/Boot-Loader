@@ -12,14 +12,40 @@ _start:
     call random
     call draw_pix
     
+
+; Función para dibujar la matriz
 draw_pix:
-    
-    mov ah, 0x0C       ; function screen draw
-    mov al, 4          ; red color pixel
-    mov cx, [row]      ; Pos Y 
-    mov dx, [column]   ; Pos X 
-    int 0x10           ; call BIOS
-    ret
+    mov si, letter_matrix    ; load matrix
+    mov bx, 5                ; # rows
+    mov cx, [row]            ; Pos Y
+    mov dx, [column]         ; Pos X
+
+    next_row:
+        mov di, [si]             ; load actual byte
+        mov bp, 8                ; 8 columns, 1 byte
+
+    next_pixel:
+        test di, 80h             
+        jz skip_pixel           
+
+        ; Draw pix (dx, cx)
+        mov ah, 0x0C            ; call Bios
+        mov al, 0x0F            ; Color
+        mov bh, 0x00            
+        int 0x10                
+
+    skip_pixel:
+        shl di, 1               
+        inc dx                  
+        dec bp                  
+        jnz next_pixel          
+        ; next row
+        mov dx, [column]        
+        inc cx                  
+        dec bx                  
+        jnz next_row            
+
+        ret
 
 ;random rows & columns
 
@@ -51,14 +77,8 @@ clean_screen:
 wait_key:
     mov ah, 0x00    ; Read key
     int 0x16        ; Call BIOS to read the key
-    cmp al, 'j'     ; compare
-    je rotate_left
-    cmp al, 'k'
-    je rotate_down
     cmp al, 'l'
     je rotate_right
-    cmp al, 'i'
-    je rotate_up
     jmp wait_key      ; check again for keys
 
 rotate_right:
@@ -69,27 +89,12 @@ rotate_right:
     call clean_screen
     jmp wait_key
 
-rotate_up:
-
-    mov ah, 0x0e    
-    mov al, 'i'   
-    int 0x10
-    jmp wait_key
-
-rotate_down:
-
-    mov ah, 0x0e    
-    mov al, 'k'   
-    int 0x10
-    jmp wait_key
-
-rotate_left:
-
-    mov ah, 0x0e    
-    mov al, 'j'  
-    int 0x10
-    jmp wait_key
-
+letter_matrix:
+    db 0b11111100      
+    db 0b11111111
+    db 0b11111111
+    db 0b11111111
+    db 0b11111111
 row:
     db 0
 
