@@ -14,7 +14,7 @@ _start:
 
 draw_pix:
    ; mov si, letter_matrix    ; load matrix
-    mov bx, 24                ; # rows
+    mov bx, 48                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
 
@@ -122,6 +122,37 @@ initial_name:
     db 0b1110100
     db 0b0001100
     db 0b0000011
+    
+    db 0b1100000 
+    db 0b0011000
+    db 0b0000110
+    db 0b0000001 
+    db 0b0000110 
+    db 0b0011000
+    db 0b1100000
+    db 0b0000000
+    
+    db 0b0000011 
+    db 0b0001100
+    db 0b1110100
+    db 0b1000100 
+    db 0b1000100 
+    db 0b1110100
+    db 0b0001100
+    db 0b0000011
+    
+    db 0b1111111 
+    db 0b0000001
+    db 0b0000001
+    db 0b0000001 
+    db 0b0000000 
+    
+    db 0b0011111  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011101  
+    db 0b0000000 
+    
 
 
 name_down:
@@ -153,6 +184,35 @@ name_down:
     db 0b0011000
     db 0b1100000
 
+    db 0b0000011 
+    db 0b0000110
+    db 0b0110000
+    db 0b1000000
+    db 0b0110000
+    db 0b0000110
+    db 0b0000011
+    db 0b0000000 
+
+    db 0b1100000
+    db 0b0011000
+    db 0b0010111
+    db 0b0010001
+    db 0b0010001
+    db 0b0010111
+    db 0b0011000
+    db 0b1100000
+
+    db 0b1111111 
+    db 0b1000000
+    db 0b1000000
+    db 0b1000000
+    db 0b0000000 
+
+    db 0b11110000
+    db 0b10101000
+    db 0b10101000
+    db 0b10111000
+    db 0b00000000
 
 
 initial_screen:
