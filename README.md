@@ -4,9 +4,7 @@ Esta tarea proporciona un bootloader básico diseñado para cargar una aplicaci�
 
 ## Curso
 
-Sistemas Operativos
-
-Instituto Tecnológico de Costa Rica
+Sistemas Operativos - Instituto Tecnológico de Costa Rica
 
 ### Funcionalidad
 
@@ -14,14 +12,14 @@ Este bootloader realiza las siguientes tareas:
 
 1. **Inicialización del Sistema**: Configuración el entorno inicial del boot.
 2. **Interrupciones**: Se hace uso de diversas interrupciones al sistema como del teclado, tiempo, etc.
-3. **Control de virualización**: Se usa la interrupción de video para poder cargar los pixeles y virualizar los dibujos.
+3. **Control de virualización**: Se usa la interrupción de video para poder cargar los pixeles y visualizar los dibujos.
 
 
 ## Compilación y Ejecución
 
-Para compilar y ejecutar el bootloader se debe ejecutar con el archivo makefile
+Para compilar y ejecutar el bootloader se debe ejecutar con el archivo makefile.
 
 ## Integrantes
 
-Valeria Morales
+Valeria Morales y
 Estefany Villalta
