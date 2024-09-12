@@ -120,6 +120,9 @@ wait_key:
     final_game:
         int 0x10                   ; call BIOS
         call clean_screen
+        mov ah, 0x4C                ; end program
+        mov al, 0x00       
+        int 0x21                    ; Interruptión DOS
 
     restart_game:
         call _start
@@ -325,29 +328,7 @@ name_right:
 
 
 
-welcome_screen:
-    dd 0x3FF8
-    dd 0xE00C
-    dd 0x10004
-    dd 0x20002
-    dd 0x40C72
 
-    dd 0x40CF2
-    dd 0x201B2
-    dd 0x103D2
-    dd 0x84D2
-    dd 0x10832
-
-    dd 0x84D2
-    dd 0x103D2
-    dd 0x201B2
-    dd 0x40CF2
-    dd 0x40C72
-
-    dd 0x20002
-    dd 0x10004
-    dd 0xE00C
-    dd 0x3FF8
 
 
 
