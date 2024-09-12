@@ -5,40 +5,12 @@ _start:
     mov ah, 0x00        ; Function 00h de INT 1Ah -set video mode
     mov al, 0x13        ; grafic mode 13h (320x200 pix, 256 colors)
     int 0x10            ; call a la BIOS
-    call draw_welcome
+    ;call draw_welcome
     call random
     call wait_key
 
-draw_welcome:
-    mov si, initial_screen    ; load matrix
-    mov bx, 19                ; # rows
-    mov cx, 50           ; Pos Y
-    mov dx, 50        ; Pos X
-
-    next_row_w:
-        mov edi, [si]             ; load actual byte
-        mov bp, 32                ; 32 columns, 1 byte
-
-    next_pixe_w:
-        test edi, 80000000h              
-        jz skip_pixel                                
-
-    skip_pixel_w:
-        shl edi, 1               
-        inc dx                  
-        dec bp                  
-        jnz next_pixel          
-        ; next row
-        mov dx, [column]        
-        inc cx              
-        add si, 4                  
-        dec bx                  
-        jnz next_row  
-
-
 
 draw_pix:
-   ; mov si, letter_matrix    ; load matrix
     mov bx, 46                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
@@ -53,7 +25,7 @@ draw_pix:
 
         ; Draw pix (dx, cx)
         mov ah, 0x0C            ; call Bios
-        mov al, 0x0F            ; Color
+        mov al, 0x0B            ; Color
         mov bh, 0x00            
         int 0x10                
 
@@ -110,13 +82,13 @@ random:
     mov ax, dx          ; dx use Time as seed
 
     xor dx, dx          
-    mov cx, 192          ; max num rows (0-199)
+    mov cx, 180          ; max num rows (0-199)
     div cx              ; Divide AX por 25,
     mov [row], dx  
 
     mov ax, dx        
     xor dx, dx          
-    mov cx, 312          ; max num columns (0-319)
+    mov cx, 300          ; max num columns (0-319)
     div cx              
     mov [column], dx  
     ret
@@ -139,8 +111,19 @@ wait_key:
     je name_left_key
     cmp al, 'j'
     je name_right_key
+    cmp al, 'f'
+    je final_game
+    cmp al, 'r'
+    je restart_game
     jmp wait_key
    
+    final_game:
+        int 0x10                   ; call BIOS
+        call clean_screen
+
+    restart_game:
+        call _start
+        ;debe estar la bienvenida
 
     initial_name_key:
         int 0x10                   ; call BIOS
@@ -342,27 +325,33 @@ name_right:
 
 
 
-initial_screen:
+welcome_screen:
     dd 0x3FF8
     dd 0xE00C
     dd 0x10004
     dd 0x20002
     dd 0x40C72
-    dd 0x40CF2
-    dd 0x201B2
-    dd 0x103D2
-    dd 0x84D2
 
+    dd 0x40CF2
+    dd 0x201B2
+    dd 0x103D2
+    dd 0x84D2
     dd 0x10832
+
     dd 0x84D2
     dd 0x103D2
     dd 0x201B2
     dd 0x40CF2
     dd 0x40C72
+
     dd 0x20002
     dd 0x10004
     dd 0xE00C
     dd 0x3FF8
+
+
+
+
 
 row:
     db 0
