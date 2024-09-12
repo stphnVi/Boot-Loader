@@ -5,15 +5,41 @@ _start:
     mov ah, 0x00        ; Function 00h de INT 1Ah -set video mode
     mov al, 0x13        ; grafic mode 13h (320x200 pix, 256 colors)
     int 0x10            ; call a la BIOS
-    ;call draw_welcome
+    call draw_welcome
     call random
     call wait_key
+
+draw_welcome:
+    mov si, initial_screen    ; load matrix
+    mov bx, 19                ; # rows
+    mov cx, 50           ; Pos Y
+    mov dx, 50        ; Pos X
+
+    next_row_w:
+        mov edi, [si]             ; load actual byte
+        mov bp, 32                ; 32 columns, 1 byte
+
+    next_pixe_w:
+        test edi, 80000000h              
+        jz skip_pixel                                
+
+    skip_pixel_w:
+        shl edi, 1               
+        inc dx                  
+        dec bp                  
+        jnz next_pixel          
+        ; next row
+        mov dx, [column]        
+        inc cx              
+        add si, 4                  
+        dec bx                  
+        jnz next_row  
 
 
 
 draw_pix:
    ; mov si, letter_matrix    ; load matrix
-    mov bx, 48                ; # rows
+    mov bx, 46                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
 
@@ -45,7 +71,7 @@ draw_pix:
         ret
 
 draw_pix_vertical:
-    mov bx, 48                ; Numero total de filas
+    mov bx, 46                ; Numero total de filas
     mov cx, [row]             ; Posición Y inicial
     mov dx, [column]          ; Posición X inicial
 
@@ -84,13 +110,13 @@ random:
     mov ax, dx          ; dx use Time as seed
 
     xor dx, dx          
-    mov cx, 200          ; max num rows (0-199)
+    mov cx, 192          ; max num rows (0-199)
     div cx              ; Divide AX por 25,
     mov [row], dx  
 
     mov ax, dx        
     xor dx, dx          
-    mov cx, 320          ; max num columns (0-319)
+    mov cx, 312          ; max num columns (0-319)
     div cx              
     mov [column], dx  
     ret
@@ -109,9 +135,9 @@ wait_key:
     je initial_name_key
     cmp al, 'k'
     je name_down_key
-    cmp al, 'j'
-    je name_left_key
     cmp al, 'l'
+    je name_left_key
+    cmp al, 'j'
     je name_right_key
     jmp wait_key
    
@@ -165,14 +191,13 @@ initial_name:
     db 0b1000000
     db 0b0000000
 
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
+    db 0b0000000
    
     db 0b1100000
     db 0b0011000
@@ -183,17 +208,14 @@ initial_name:
     db 0b1100000
     db 0b0000000
    
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
    
     db 0b1111111
-    db 0b0000001
     db 0b0000001
     db 0b0000001
     db 0b0000000
@@ -226,32 +248,29 @@ name_down:
     db 0b0000001
     db 0b00000000
 
-    db 0b1100000
-    db 0b0011000
-    db 0b0010111
-    db 0b0010001
-    db 0b0010001
-    db 0b0010111
-    db 0b0011000
-    db 0b1100000
+    db 0b00000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
+    db 0b00000000
 
     db 0b0000011
-    db 0b0000110
+    db 0b0001100
     db 0b0110000
     db 0b1000000
     db 0b0110000
-    db 0b0000110
+    db 0b0001100
     db 0b0000011
     db 0b0000000
 
-    db 0b1100000
-    db 0b0011000
-    db 0b0010111
-    db 0b0010001
-    db 0b0010001
-    db 0b0010111
-    db 0b0011000
-    db 0b1100000
+    db 0b0000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
 
     db 0b1111111
     db 0b1000000
@@ -266,26 +285,26 @@ name_down:
     db 0b00000000
    
 name_right:
+    db 0b0011101  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011111  
+    db 0b0000000
+   
+    db 0b0000000
+    db 0b0000001
+    db 0b0000001
+    db 0b0000001
+    db 0b1111111
+    db 0b0000000
+    
+    db 0b0000000
     db 0b0011111  
     db 0b0010101  
     db 0b0010101  
-    db 0b0011101  
+    db 0b0010111  
     db 0b0000000
-   
-    db 0b1111111
-    db 0b0000001
-    db 0b0000001
-    db 0b0000001
     db 0b0000000
-
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
    
     db 0b1100000
     db 0b0011000
@@ -296,25 +315,22 @@ name_right:
     db 0b1100000
     db 0b0000000
 
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
-
-    db 0b1111111
-    db 0b1001000
-    db 0b1001000
-    db 0b1000000
-    db 0b0000000
-
     db 0b0011111  
     db 0b0010101  
     db 0b0010101  
+    db 0b0010111  
+    db 0b0000000
+
+    db 0b1001000
+    db 0b1001000
+    db 0b1001000
+    db 0b1111111
+    db 0b0000000
+
     db 0b0011101  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011111  
     db 0b0000000
    
     db 0b1000000
@@ -323,22 +339,30 @@ name_right:
     db 0b1000000
     db 0b1000000
     db 0b0000000
-
-
 
 
 
 initial_screen:
-    db 0b1111111    
-    db 0b1111111
-    db 0b1111111
-    db 0b1111111    
-    db 0b1111111
-    db 0b1111111
+    dd 0x3FF8
+    dd 0xE00C
+    dd 0x10004
+    dd 0x20002
+    dd 0x40C72
+    dd 0x40CF2
+    dd 0x201B2
+    dd 0x103D2
+    dd 0x84D2
 
-;not implemented yet
-welcome:
-    db "presione la tecla 'e' para iniciar", 0
+    dd 0x10832
+    dd 0x84D2
+    dd 0x103D2
+    dd 0x201B2
+    dd 0x40CF2
+    dd 0x40C72
+    dd 0x20002
+    dd 0x10004
+    dd 0xE00C
+    dd 0x3FF8
 
 row:
     db 0
