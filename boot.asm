@@ -12,6 +12,7 @@ _start:
 
 draw_pix:
     mov bx, 46                ; # rows
+    mov bx, 46                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
 
@@ -25,6 +26,7 @@ draw_pix:
 
         ; Draw pix (dx, cx)
         mov ah, 0x0C            ; call Bios
+        mov al, 0x0B            ; Color
         mov al, 0x0B            ; Color
         mov bh, 0x00            
         int 0x10                
@@ -43,6 +45,7 @@ draw_pix:
         ret
 
 draw_pix_vertical:
+    mov bx, 46                ; Numero total de filas
     mov bx, 46                ; Numero total de filas
     mov cx, [row]             ; Posición Y inicial
     mov dx, [column]          ; Posición X inicial
@@ -83,11 +86,13 @@ random:
 
     xor dx, dx          
     mov cx, 180          ; max num rows (0-199)
+    mov cx, 180          ; max num rows (0-199)
     div cx              ; Divide AX por 25,
     mov [row], dx  
 
     mov ax, dx        
     xor dx, dx          
+    mov cx, 300          ; max num columns (0-319)
     mov cx, 300          ; max num columns (0-319)
     div cx              
     mov [column], dx  
@@ -108,9 +113,15 @@ wait_key:
     cmp al, 'k'
     je name_down_key
     cmp al, 'l'
+    cmp al, 'l'
     je name_left_key
     cmp al, 'j'
+    cmp al, 'j'
     je name_right_key
+    cmp al, 'f'
+    je final_game
+    cmp al, 'r'
+    je restart_game
     cmp al, 'f'
     je final_game
     cmp al, 'r'
@@ -248,6 +259,13 @@ initial_name:
     db 0b0111111  
     db 0b0000000
     db 0b0000000
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
+    db 0b0000000
    
     db 0b1100000
     db 0b0011000
@@ -258,6 +276,12 @@ initial_name:
     db 0b1100000
     db 0b0000000
    
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
     db 0b0000000
     db 0b0101111  
     db 0b0101001  
@@ -305,16 +329,31 @@ name_down:
     db 0b11111000
     db 0b00000000
     db 0b00000000
+    db 0b00000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
+    db 0b00000000
 
     db 0b0000011
+    db 0b0001100
     db 0b0001100
     db 0b0110000
     db 0b1000000
     db 0b0110000
     db 0b0001100
+    db 0b0001100
     db 0b0000011
     db 0b0000000
 
+    db 0b0000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
     db 0b0000000
     db 0b11101000
     db 0b10101000
@@ -336,15 +375,19 @@ name_down:
    
 name_right:
     db 0b0011101  
+    db 0b0011101  
     db 0b0010101  
     db 0b0010101  
+    db 0b0011111  
     db 0b0011111  
     db 0b0000000
    
     db 0b0000000
+    db 0b0000000
     db 0b0000001
     db 0b0000001
     db 0b0000001
+    db 0b1111111
     db 0b1111111
     db 0b0000000
    
@@ -389,6 +432,9 @@ name_right:
     db 0b1000000
     db 0b1000000
     db 0b0000000
+
+
+
 
 
 
