@@ -5,15 +5,13 @@ _start:
     mov ah, 0x00        ; Function 00h de INT 1Ah -set video mode
     mov al, 0x13        ; grafic mode 13h (320x200 pix, 256 colors)
     int 0x10            ; call a la BIOS
-    ;call draw_welcome
     call random
+    call draw_welcome
     call wait_key
 
 
-
 draw_pix:
-   ; mov si, letter_matrix    ; load matrix
-    mov bx, 48                ; # rows
+    mov bx, 46                ; # rows
     mov cx, [row]            ; Pos Y
     mov dx, [column]         ; Pos X
 
@@ -27,7 +25,7 @@ draw_pix:
 
         ; Draw pix (dx, cx)
         mov ah, 0x0C            ; call Bios
-        mov al, 0x0F            ; Color
+        mov al, 0x0B            ; Color
         mov bh, 0x00            
         int 0x10                
 
@@ -45,7 +43,7 @@ draw_pix:
         ret
 
 draw_pix_vertical:
-    mov bx, 48                ; Numero total de filas
+    mov bx, 46                ; Numero total de filas
     mov cx, [row]             ; Posición Y inicial
     mov dx, [column]          ; Posición X inicial
 
@@ -84,13 +82,13 @@ random:
     mov ax, dx          ; dx use Time as seed
 
     xor dx, dx          
-    mov cx, 200          ; max num rows (0-199)
+    mov cx, 180          ; max num rows (0-199)
     div cx              ; Divide AX por 25,
     mov [row], dx  
 
     mov ax, dx        
     xor dx, dx          
-    mov cx, 320          ; max num columns (0-319)
+    mov cx, 300          ; max num columns (0-319)
     div cx              
     mov [column], dx  
     ret
@@ -109,12 +107,26 @@ wait_key:
     je initial_name_key
     cmp al, 'k'
     je name_down_key
-    cmp al, 'j'
-    je name_left_key
     cmp al, 'l'
+    je name_left_key
+    cmp al, 'j'
     je name_right_key
+    cmp al, 'f'
+    je final_game
+    cmp al, 'r'
+    je restart_game
     jmp wait_key
    
+    final_game:
+        int 0x10                   ; call BIOS
+        call clean_screen
+        mov ah, 0x4C                ; end program
+        mov al, 0x00      
+        int 0x21                    ; Interruptión DOS
+
+    restart_game:
+        call _start
+        ;debe estar la bienvenida
 
     initial_name_key:
         int 0x10                   ; call BIOS
@@ -144,6 +156,70 @@ wait_key:
         call draw_pix_vertical
         jmp wait_key
      
+draw_welcome:
+     int 0x10        
+     call clean_screen
+     mov si, welcome    
+     call draw_pix
+     jmp wait_key
+     
+     
+welcome:
+    db 0b1111111
+    db 0b0001000
+    db 0b0001000
+    db 0b1111111
+    db 0b0000000
+   
+    db 0b0000000  
+    db 0b1001111  
+    db 0b0000000  
+    db 0b0000000  
+    db 0b0000000
+   
+    db 0b0000000  
+    db 0b1111111  
+    db 0b1001000  
+    db 0b1111000  
+    db 0b0000000
+    db 0b0000000
+   
+    db 0b0000000  
+    db 0b0111110  
+    db 0b0100000  
+    db 0b0000000  
+    db 0b0000000
+   
+    db 0b0011111  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011101  
+    db 0b0000000
+   
+    db 0b0000000
+    db 0b0000000  
+    db 0b0111010  
+    db 0b0101010  
+    db 0b0101110  
+    db 0b0000000
+   
+    db 0b0000000
+    db 0b0000000  
+    db 0b0111010  
+    db 0b0101010  
+    db 0b0101110  
+    db 0b0000000
+       
+    db 0b0000000  
+    db 0b0000000  
+    db 0b1100000
+   
+    db 0b0011111  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011101  
+    db 0b1100000
+     
 
 initial_name:
     db 0b1000000
@@ -165,14 +241,13 @@ initial_name:
     db 0b1000000
     db 0b0000000
 
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
+    db 0b0000000
    
     db 0b1100000
     db 0b0011000
@@ -183,17 +258,14 @@ initial_name:
     db 0b1100000
     db 0b0000000
    
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
+    db 0b0000000
+    db 0b0101111  
+    db 0b0101001  
+    db 0b0101001  
+    db 0b0111111  
+    db 0b0000000
    
     db 0b1111111
-    db 0b0000001
     db 0b0000001
     db 0b0000001
     db 0b0000000
@@ -226,32 +298,29 @@ name_down:
     db 0b0000001
     db 0b00000000
 
-    db 0b1100000
-    db 0b0011000
-    db 0b0010111
-    db 0b0010001
-    db 0b0010001
-    db 0b0010111
-    db 0b0011000
-    db 0b1100000
+    db 0b00000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
+    db 0b00000000
 
     db 0b0000011
-    db 0b0000110
+    db 0b0001100
     db 0b0110000
     db 0b1000000
     db 0b0110000
-    db 0b0000110
+    db 0b0001100
     db 0b0000011
     db 0b0000000
 
-    db 0b1100000
-    db 0b0011000
-    db 0b0010111
-    db 0b0010001
-    db 0b0010001
-    db 0b0010111
-    db 0b0011000
-    db 0b1100000
+    db 0b0000000
+    db 0b11101000
+    db 0b10101000
+    db 0b10101000
+    db 0b11111000
+    db 0b00000000
 
     db 0b1111111
     db 0b1000000
@@ -266,26 +335,26 @@ name_down:
     db 0b00000000
    
 name_right:
+    db 0b0011101  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011111  
+    db 0b0000000
+   
+    db 0b0000000
+    db 0b0000001
+    db 0b0000001
+    db 0b0000001
+    db 0b1111111
+    db 0b0000000
+   
+    db 0b0000000
     db 0b0011111  
     db 0b0010101  
     db 0b0010101  
-    db 0b0011101  
+    db 0b0010111  
     db 0b0000000
-   
-    db 0b1111111
-    db 0b0000001
-    db 0b0000001
-    db 0b0000001
     db 0b0000000
-
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
    
     db 0b1100000
     db 0b0011000
@@ -296,25 +365,22 @@ name_right:
     db 0b1100000
     db 0b0000000
 
-    db 0b0000011
-    db 0b0001100
-    db 0b1110100
-    db 0b1000100
-    db 0b1000100
-    db 0b1110100
-    db 0b0001100
-    db 0b0000011
-
-    db 0b1111111
-    db 0b1001000
-    db 0b1001000
-    db 0b1000000
-    db 0b0000000
-
     db 0b0011111  
     db 0b0010101  
     db 0b0010101  
+    db 0b0010111  
+    db 0b0000000
+
+    db 0b1001000
+    db 0b1001000
+    db 0b1001000
+    db 0b1111111
+    db 0b0000000
+
     db 0b0011101  
+    db 0b0010101  
+    db 0b0010101  
+    db 0b0011111  
     db 0b0000000
    
     db 0b1000000
@@ -328,17 +394,9 @@ name_right:
 
 
 
-initial_screen:
-    db 0b1111111    
-    db 0b1111111
-    db 0b1111111
-    db 0b1111111    
-    db 0b1111111
-    db 0b1111111
 
-;not implemented yet
-welcome:
-    db "presione la tecla 'e' para iniciar", 0
+
+
 
 row:
     db 0
